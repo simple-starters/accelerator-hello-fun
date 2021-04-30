@@ -9,7 +9,19 @@ metadata:
 build:
   artifacts:
   - image: {{artifactId}}
+    custom:
+      buildCommand: ./mvnw spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=$IMAGE
+      dependencies:
+        paths:
+          - src
+          - pom.xml
 deploy:
   kubectl:
     manifests:
-    - kubernetes/knative-service.yaml
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+portForward:
+  - resourceType: service
+    resourceName: {{artifactId}}-service
+    port: 80
+    localPort: 8080
